@@ -17,8 +17,22 @@ service DataServer {
 
   rpc ProcessData(stream c2sData) returns (stream s2cData) {}
 
-  rpc GetLatestCatDB(c2sData) returns (s2cData) {}
+  rpc GetLatestDataFile(DataFileType) returns (DataFilePayload) {}
 }
+
+
+message DataFileType {
+  int32  kind                 = 1;
+  string additional_attribute = 2;
+}
+
+message DataFilePayload {
+  int32 kind      = 1;
+  string filetype = 2;
+  string filename = 3;
+  string data     = 4;
+}
+
 
 // A c2sData is a message from the client to the server.
 message c2sData {

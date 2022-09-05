@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DataServerClient interface {
 	ProcessData(ctx context.Context, opts ...grpc.CallOption) (DataServer_ProcessDataClient, error)
-	GetLatestCatDB(ctx context.Context, in *C2SData, opts ...grpc.CallOption) (*S2CData, error)
+	GetLatestDataFile(ctx context.Context, in *DataFileType, opts ...grpc.CallOption) (*DataFilePayload, error)
 }
 
 type dataServerClient struct {
@@ -65,9 +65,9 @@ func (x *dataServerProcessDataClient) Recv() (*S2CData, error) {
 	return m, nil
 }
 
-func (c *dataServerClient) GetLatestCatDB(ctx context.Context, in *C2SData, opts ...grpc.CallOption) (*S2CData, error) {
-	out := new(S2CData)
-	err := c.cc.Invoke(ctx, "/dataserver.DataServer/GetLatestCatDB", in, out, opts...)
+func (c *dataServerClient) GetLatestDataFile(ctx context.Context, in *DataFileType, opts ...grpc.CallOption) (*DataFilePayload, error) {
+	out := new(DataFilePayload)
+	err := c.cc.Invoke(ctx, "/dataserver.DataServer/GetLatestDataFile", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *dataServerClient) GetLatestCatDB(ctx context.Context, in *C2SData, opts
 // for forward compatibility
 type DataServerServer interface {
 	ProcessData(DataServer_ProcessDataServer) error
-	GetLatestCatDB(context.Context, *C2SData) (*S2CData, error)
+	GetLatestDataFile(context.Context, *DataFileType) (*DataFilePayload, error)
 	mustEmbedUnimplementedDataServerServer()
 }
 
@@ -90,8 +90,8 @@ type UnimplementedDataServerServer struct {
 func (UnimplementedDataServerServer) ProcessData(DataServer_ProcessDataServer) error {
 	return status.Errorf(codes.Unimplemented, "method ProcessData not implemented")
 }
-func (UnimplementedDataServerServer) GetLatestCatDB(context.Context, *C2SData) (*S2CData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLatestCatDB not implemented")
+func (UnimplementedDataServerServer) GetLatestDataFile(context.Context, *DataFileType) (*DataFilePayload, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLatestDataFile not implemented")
 }
 func (UnimplementedDataServerServer) mustEmbedUnimplementedDataServerServer() {}
 
@@ -132,20 +132,20 @@ func (x *dataServerProcessDataServer) Recv() (*C2SData, error) {
 	return m, nil
 }
 
-func _DataServer_GetLatestCatDB_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(C2SData)
+func _DataServer_GetLatestDataFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DataFileType)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataServerServer).GetLatestCatDB(ctx, in)
+		return srv.(DataServerServer).GetLatestDataFile(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/dataserver.DataServer/GetLatestCatDB",
+		FullMethod: "/dataserver.DataServer/GetLatestDataFile",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataServerServer).GetLatestCatDB(ctx, req.(*C2SData))
+		return srv.(DataServerServer).GetLatestDataFile(ctx, req.(*DataFileType))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -158,8 +158,8 @@ var DataServer_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DataServerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetLatestCatDB",
-			Handler:    _DataServer_GetLatestCatDB_Handler,
+			MethodName: "GetLatestDataFile",
+			Handler:    _DataServer_GetLatestDataFile_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
